@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenOak Technologies - Professional IT Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Base Styles */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #E8F4FC;
+            --secondary-bg: #D4EBF7;
+            --tertiary-bg: #FFFFFF;
+            --primary-text: #1A1A1A;
+            --secondary-text: #4A4A4A;
+            --accent: #0066B3;
+            --border: #B8D4E8;
+            --hover: #004D80;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Source Sans 3', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--primary-text);
+            background-color: var(--primary-bg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: transparent;
+            transition: all 0.3s ease;
+            padding: 20px 0;
+        }
+
+        header.scrolled {
+            background: var(--tertiary-bg);
+            box-shadow: 0 2px 20px rgba(0, 102, 179, 0.1);
+            padding: 15px 0;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-text);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--secondary-text);
+            font-weight: 400;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--primary-text);
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            background: var(--tertiary-bg);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--secondary-text);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--primary-bg);
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border: 2px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--tertiary-bg);
+            color: var(--accent);
+        }
+
+        .book-service-btn {
+            display: inline-block;
+            background: var(--accent);
+            color: #FFFFFF;
+            padding: 10px 24px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border: 2px solid var(--accent);
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .book-service-btn:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        /* Services Section */
+        .services {
+            padding: 80px 0;
+            background: var(--secondary-bg);
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .services-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(0, 102, 179, 0.15);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-text);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            margin: 20px auto 0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--tertiary-bg);
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .service-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-text);
+        }
+
+        .service-card p {
+            color: var(--secondary-text);
+            font-size: 15px;
+        }
+
+        /* Why Choose Us Section */
+        .why-choose-us {
+            padding: 80px 0;
+            background: var(--tertiary-bg);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-item h3 {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-text);
+        }
+
+        .feature-item p {
+            color: var(--secondary-text);
+            font-size: 14px;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 80px 0;
+            background: var(--secondary-bg);
+        }
+
+        .contact-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact .section-title {
+            margin-bottom: 15px;
+        }
+
+        .contact-subtitle {
+            color: var(--secondary-text);
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .contact-form {
+            text-align: left;
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: var(--tertiary-bg);
+            border-radius: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .contact-info p {
+            font-size: 18px;
+            color: var(--primary-text);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-text);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px 0;
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--primary-text);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-bottom-color: var(--accent);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--primary-bg);
+            padding: 18px 40px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-bg);
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--accent);
+            color: #FFFFFF;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        footer .logo {
+            color: #FFFFFF;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        footer .logo span {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--primary-bg);
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services, .why-choose-us, .contact {
+                padding: 40px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <a href="#" class="logo">GreenOak <span>Technologies</span></a>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Professional IT Services for Homes and Businesses</h1>
+            <p>Expert Laptop Repair, System Maintenance, Windows Installation, CCTV Security Systems, and Wi-Fi Network Solutions</p>
+            <a href="#contact" class="cta-button">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="services-header">
+                <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=400&fit=crop" alt="Laptop Repair Services" class="services-image">
+                <h2 class="section-title">Our Comprehensive Services Include</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <span class="service-icon">💻</span>
+                    <h3>Laptop Repair and Troubleshooting</h3>
+                    <p>Professional diagnosis and repair for all laptop brands. We fix hardware and software issues quickly and efficiently.</p>
+                    <a href="#contact" class="book-service-btn">Book a Service</a>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">🔧</span>
+                    <h3>Laptop Maintenance and Upgrades</h3>
+                    <p>Keep your devices running smoothly with our comprehensive maintenance services and performance upgrades.</p>
+                    <a href="#contact" class="book-service-btn">Book a Service</a>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">🪟</span>
+                    <h3>Windows Installation and Software Setup</h3>
+                    <p>Clean Windows installation, driver setup, and all your essential software configured professionally.</p>
+                    <a href="#contact" class="book-service-btn">Book a Service</a>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">📹</span>
+                    <h3>CCTV Camera Installation and Security Systems</h3>
+                    <p>Protect your property with professional CCTV installation and integrated security solutions.</p>
+                    <a href="#contact" class="book-service-btn">Book a Service</a>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">📶</span>
+                    <h3>Wi-Fi Installation and Network Configuration</h3>
+                    <p>Fast and reliable Wi-Fi setup for homes and businesses. Optimal network performance guaranteed.</p>
+                    <a href="#contact" class="book-service-btn">Book a Service</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Fast and Reliable Service</h3>
+                    <p>Quick turnaround times without compromising on quality</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">💰</span>
+                    <h3>Affordable and Transparent Pricing</h3>
+                    <p>No hidden fees. Clear quotes before any work begins</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <h3>Certified and Experienced Technicians</h3>
+                    <p>Skilled professionals with years of industry experience</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🏢</span>
+                    <h3>Professional Support</h3>
+                    <p>Expert assistance for both residential and commercial clients</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-wrapper">
+                <h2 class="section-title">Contact Us Today</h2>
+                <p class="contact-subtitle">For quick, reliable, and professional IT solutions tailored to your needs</p>
+                <div class="contact-info">
+                    <p><strong>Phone:</strong> <a href="tel:0701776778" style="color: var(--accent); text-decoration: none;">0701776778</a></p>
+                </div>
+                <form class="contact-form" id="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Your Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell us about your IT needs..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo">GreenOak <span>Technologies</span></div>
+            <p>&copy; 2026 GreenOak Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Form submission
+        const contactForm = document.getElementById('contact-form');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+            
+            if (name && email && message) {
+                alert('Thank you for your message! We will get back to you soon.');
+                contactForm.reset();
+            }
+        });
+    </script>
+</body>
+</html>
