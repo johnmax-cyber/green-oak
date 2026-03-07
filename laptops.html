@@ -233,7 +233,7 @@
         <a href="index.html" class="logo">GreenOak <span>Technologies</span></a>
         <nav>
             <a href="index.html">Home</a>
-            <a href="services.html" class="active">Services</a>
+            <a href="services.html">Services</a>
             <a href="contact.html">Contact</a>
             <a href="admin.html">Admin</a>
         </nav>
@@ -393,6 +393,10 @@
     }
 
     function placeOrder() {
+        if (!selectedLaptop) {
+            console.error('No laptop selected');
+            return;
+        }
         const name = document.getElementById('order-name').value.trim();
         const email = document.getElementById('order-email').value.trim();
         const phone = document.getElementById('order-phone').value.trim();
