@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Store - GreenOak Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #0a1410; }
+        .page-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(39,174,96,0.15);
+        }
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+            font-size: 2.2rem;
+            margin: 0 0 10px;
+        }
+        .page-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.05rem;
+            margin: 0;
+        }
+        .laptop-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+        .laptop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+        }
+        .laptop-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            border: 1px solid rgba(46,204,113,0.25);
+            border-radius: 18px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .laptop-card:hover {
+            border-color: rgba(46,204,113,0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(39,174,96,0.15);
+        }
+        .laptop-emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+        .laptop-name {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 12px;
+            line-height: 1.3;
+        }
+        .laptop-specs {
+            color: rgba(255,255,255,0.75);
+            font-size: 14px;
+            margin: 0 0 20px;
+            line-height: 1.6;
+        }
+        .laptop-price {
+            color: #2ecc71;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 14px;
+        }
+        .laptop-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+            padding: 14px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+        }
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+        }
+        .meta-label { color: rgba(255,255,255,0.45); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .order-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .order-btn:hover { opacity: 0.9; transform: scale(1.02); }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(5,12,9,0.97);
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+        .modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 60px; }
+        .modal-box {
+            background: linear-gradient(145deg, rgba(30,45,35,0.95), rgba(20,30,25,0.98));
+            border: 1px solid rgba(46,204,113,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 560px;
+            width: 100%;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 26px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: #fff; }
+        .modal-product {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal-emoji { font-size: 52px; }
+        .modal-title { color: #fff; font-size: 1.35rem; margin: 0 0 6px; }
+        .modal-specs { color: rgba(255,255,255,0.65); font-size: 14px; margin: 0; }
+        .modal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .detail-box {
+            background: rgba(46,204,113,0.08);
+            border: 1px solid rgba(46,204,113,0.2);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .detail-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.45);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .detail-value { color: #fff; font-size: 15px; font-weight: 600; }
+        .detail-value.price { color: #2ecc71; font-size: 1.4rem; }
+        .order-form h4 {
+            color: #2ecc71;
+            margin: 0 0 18px;
+            font-size: 16px;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2ecc71;
+        }
+        .form-select {
+            background: rgba(30,45,35,0.95);
+            cursor: pointer;
+        }
+        .form-select option { background: #1e2d23; }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .success-msg, .error-msg {
+            display: none;
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success-msg {
+            background: rgba(46,204,113,0.15);
+            border: 1px solid rgba(46,204,113,0.3);
+            color: #2ecc71;
+        }
+        .error-msg {
+            background: rgba(231,76,60,0.15);
+            border: 1px solid rgba(231,76,60,0.3);
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <a href="index.html" class="logo">GreenOak <span>Technologies</span></a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="services.html" class="active">Services</a>
+            <a href="contact.html">Contact</a>
+            <a href="admin.html">Admin</a>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>🛒 Laptop Store</h1>
+        <p>Choose your perfect laptop — Full warranty, fast delivery, secure payment</p>
+    </div>
+
+    <div class="laptop-container">
+        <div class="laptop-grid" id="laptop-grid"></div>
+    </div>
+
+    <!-- ORDER MODAL -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-product">
+                <span class="modal-emoji" id="modal-emoji"></span>
+                <div>
+                    <h3 class="modal-title" id="modal-title"></h3>
+                    <p class="modal-specs" id="modal-specs"></p>
+                </div>
+            </div>
+            <div class="modal-details">
+                <div class="detail-box">
+                    <div class="detail-label">Price</div>
+                    <div class="detail-value price" id="modal-price"></div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">Delivery</div>
+                    <div class="detail-value" id="modal-delivery"></div>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / -1;">
+                    <div class="detail-label">Warranty</div>
+                    <div class="detail-value" id="modal-warranty"></div>
+                </div>
+            </div>
+            <div class="order-form">
+                <h4>Complete Your Order</h4>
+                <input type="text" id="order-name" class="form-input" placeholder="Full Name *">
+                <input type="email" id="order-email" class="form-input" placeholder="Email Address *">
+                <input type="tel" id="order-phone" class="form-input" placeholder="Phone Number">
+                <select id="order-payment" class="form-select">
+                    <option value="">Select Payment Method *</option>
+                    <option>M-Pesa</option>
+                    <option>Bank Transfer</option>
+                    <option>Cash on Delivery</option>
+                    <option>Credit / Debit Card</option>
+                </select>
+                <button class="submit-btn" onclick="placeOrder()">Place Order</button>
+                <div class="success-msg" id="success-msg">✅ Order placed! We'll contact you within 24 hours.</div>
+                <div class="error-msg" id="error-msg">Please fill in name, email, and payment method.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const laptops = [
+        {
+            id: 1, name: "HP EliteBook 840 G9",
+            specs: "Intel Core i7-1255U · 16GB RAM · 512GB SSD · 14\" FHD IPS",
+            price: "KES 115,000",
+            delivery: "2–3 business days",
+            warranty: "1 Year On-Site Warranty",
+            emoji: "💼"
+        },
+        {
+            id: 2, name: "Dell XPS 15 9530",
+            specs: "Intel Core i9-13900H · 32GB RAM · 1TB SSD · 15.6\" OLED Touch",
+            price: "KES 245,000",
+            delivery: "3–5 business days",
+            warranty: "2 Year Comprehensive Warranty",
+            emoji: "🖥️"
+        },
+        {
+            id: 3, name: "Lenovo ThinkPad E15",
+            specs: "AMD Ryzen 5 5625U · 16GB RAM · 512GB SSD · 15.6\" FHD",
+            price: "KES 89,000",
+            delivery: "1–2 business days (in stock)",
+            warranty: "1 Year Carry-In Warranty",
+            emoji: "🔵"
+        },
+        {
+            id: 4, name: "Apple MacBook Air M2",
+            specs: "Apple M2 · 8GB RAM · 256GB SSD · 13.6\" Liquid Retina",
+            price: "KES 185,000",
+            delivery: "3–5 business days",
+            warranty: "1 Year Apple Limited Warranty",
+            emoji: "🍎"
+        },
+        {
+            id: 5, name: "Asus VivoBook 15",
+            specs: "Intel Core i5-1235U · 8GB RAM · 512GB SSD · 15.6\" FHD",
+            price: "KES 72,000",
+            delivery: "1–2 business days (in stock)",
+            warranty: "1 Year Carry-In Warranty",
+            emoji: "⚡"
+        },
+        {
+            id: 6, name: "Microsoft Surface Pro 9",
+            specs: "Intel Core i5-1235U · 16GB RAM · 256GB SSD · 13\" PixelSense",
+            price: "KES 145,000",
+            delivery: "4–6 business days",
+            warranty: "1 Year Microsoft Warranty",
+            emoji: "🪟"
+        }
+    ];
+
+    let selectedLaptop = null;
+
+    function renderLaptops() {
+        const grid = document.getElementById('laptop-grid');
+        grid.innerHTML = laptops.map(l => `
+            <div class="laptop-card">
+                <span class="laptop-emoji">${l.emoji}</span>
+                <h3 class="laptop-name">${l.name}</h3>
+                <p class="laptop-specs">${l.specs}</p>
+                <span class="laptop-price">${l.price}</span>
+                <div class="laptop-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Delivery</span>
+                        <span>🚚 ${l.delivery}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Warranty</span>
+                        <span>🛡️ ${l.warranty}</span>
+                    </div>
+                </div>
+                <button class="order-btn" onclick="openModal(${l.id})">Order This Laptop</button>
+            </div>
+        `).join('');
+    }
+
+    function openModal(id) {
+        selectedLaptop = laptops.find(l => l.id === id);
+        document.getElementById('modal-emoji').textContent = selectedLaptop.emoji;
+        document.getElementById('modal-title').textContent = selectedLaptop.name;
+        document.getElementById('modal-specs').textContent = selectedLaptop.specs;
+        document.getElementById('modal-price').textContent = selectedLaptop.price;
+        document.getElementById('modal-delivery').textContent = selectedLaptop.delivery;
+        document.getElementById('modal-warranty').textContent = selectedLaptop.warranty;
+        document.getElementById('success-msg').style.display = 'none';
+        document.getElementById('error-msg').style.display = 'none';
+        document.getElementById('order-name').value = '';
+        document.getElementById('order-email').value = '';
+        document.getElementById('order-phone').value = '';
+        document.getElementById('order-payment').value = '';
+        document.getElementById('order-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('order-modal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function placeOrder() {
+        const name = document.getElementById('order-name').value.trim();
+        const email = document.getElementById('order-email').value.trim();
+        const phone = document.getElementById('order-phone').value.trim();
+        const payment = document.getElementById('order-payment').value;
+        const successMsg = document.getElementById('success-msg');
+        const errorMsg = document.getElementById('error-msg');
+        
+        if (!name || !email || !payment) {
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'block';
+            return;
+        }
+        
+        const orders = JSON.parse(localStorage.getItem('greenoak_bookings')) || [];
+        orders.push({
+            name, email, phone,
+            service: `Laptop Purchase: ${selectedLaptop.name}`,
+            message: `Price: ${selectedLaptop.price} | Payment: ${payment} | Delivery: ${selectedLaptop.delivery} | Warranty: ${selectedLaptop.warranty}`,
+            date: new Date().toLocaleString()
+        });
+        localStorage.setItem('greenoak_bookings', JSON.stringify(orders));
+        
+        errorMsg.style.display = 'none';
+        successMsg.style.display = 'block';
+        successMsg.textContent = `✅ Order placed for ${selectedLaptop.name}! We'll contact you at ${email} within 24 hours.`;
+        
+        setTimeout(closeModal, 3500);
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    renderLaptops();
+    </script>
+</body>
+</html>
