@@ -12,15 +12,45 @@
 <body>
     <div class="bg-animation"></div>
 
-    <header>
+    <!-- LOGIN OVERLAY -->
+    <div id="login-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,15,0.97);display:flex;align-items:center;justify-content:center;">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(39,174,96,0.3);border-radius:16px;padding:48px 40px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+            <div style="text-align:center;margin-bottom:32px;">
+                <div style="font-size:48px;margin-bottom:12px;">🔐</div>
+                <h2 style="font-family:'Playfair Display',serif;color:#fff;margin:0 0 6px;">Admin Login</h2>
+                <p style="color:rgba(255,255,255,0.5);font-size:14px;margin:0;">GreenOak Technologies</p>
+            </div>
+            <div id="login-error" style="display:none;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);color:#e74c3c;padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:20px;text-align:center;">
+                Invalid username or password.
+            </div>
+            <div style="margin-bottom:18px;">
+                <label style="display:block;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:8px;font-weight:500;">Username</label>
+                <input id="login-username" type="text" placeholder="Enter username" autocomplete="username"
+                    style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:15px;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                    onfocus="this.style.borderColor='#27ae60'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
+            <div style="margin-bottom:28px;">
+                <label style="display:block;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:8px;font-weight:500;">Password</label>
+                <input id="login-password" type="password" placeholder="Enter password" autocomplete="current-password"
+                    style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:15px;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                    onfocus="this.style.borderColor='#27ae60'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
+            <button onclick="doLogin()"
+                style="width:100%;padding:14px;background:linear-gradient(135deg,#27ae60,#2ecc71);border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s;"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Login</button>
+        </div>
+    </div>
+
+    <header id="main-header" style="display:none;">
         <a href="index.html" class="logo">GreenOak <span>Admin</span></a>
         <nav>
             <a href="index.html">Website</a>
             <a href="admin.html" class="active">Dashboard</a>
+            <a href="#" onclick="doLogout()" style="color:rgba(255,100,100,0.8);">Logout</a>
         </nav>
     </header>
 
-    <div class="dashboard">
+    <div class="dashboard" id="main-dashboard" style="display:none;">
         <h1>Dashboard</h1>
         <p class="subtitle">Track your bookings and website visitors</p>
 
@@ -50,8 +80,49 @@
             <button class="clear-btn" onclick="clearBookings()">Clear All Bookings</button>
         </div>
     </div>
+    </div><!-- end main-dashboard -->
 
     <script>
+        // ── Auth ──────────────────────────────────────────────
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'greenoak2024';
+
+        function checkAuth() {
+            const loggedIn = sessionStorage.getItem('greenoak_admin_auth') === 'true';
+            if (loggedIn) {
+                showDashboard();
+            } else {
+                document.getElementById('login-overlay').style.display = 'flex';
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-header').style.display = '';
+            document.getElementById('main-dashboard').style.display = '';
+            updateVisitors();
+            loadBookings();
+        }
+
+        function doLogin() {
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value;
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                sessionStorage.setItem('greenoak_admin_auth', 'true');
+                document.getElementById('login-error').style.display = 'none';
+                showDashboard();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-password').value = '';
+            }
+        }
+
+        function doLogout() {
+            sessionStorage.removeItem('greenoak_admin_auth');
+            location.reload();
+        }
+
+        // ── Dashboard ─────────────────────────────────────────
         function updateVisitors() {
             const today = new Date().toDateString();
 
@@ -108,8 +179,7 @@
             }
         }
 
-        updateVisitors();
-        loadBookings();
+        checkAuth();
     </script>
 </body>
 </html>
