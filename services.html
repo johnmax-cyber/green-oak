@@ -63,8 +63,188 @@
                 <p>Fast and reliable Wi-Fi setup for homes and businesses. Optimal network performance guaranteed.</p>
                 <a href="contact.html" class="book-btn">Book a Service</a>
             </div>
+            <!-- Laptop Sales Card -->
+            <div class="service-card" style="grid-column:1/-1;">
+                <span class="service-icon">🛒</span>
+                <h3>Laptop Sales — Shop & Order Online</h3>
+                <p>Browse our curated selection of laptops. Pick your model, review pricing, delivery timeline, payment options, and warranty — then order directly.</p>
+                <button class="book-btn" onclick="document.getElementById('laptop-shop').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+            </div>
         </div>
     </div>
+
+    <!-- ══════════════ LAPTOP SHOP SECTION ══════════════ -->
+    <section id="laptop-shop" style="padding:60px 20px;max-width:1200px;margin:0 auto;">
+        <h2 style="font-family:'Playfair Display',serif;font-size:2rem;color:#fff;text-align:center;margin-bottom:8px;">Laptop Store</h2>
+        <p style="text-align:center;color:rgba(255,255,255,0.55);margin-bottom:40px;">Select a laptop to see price, delivery, payment & warranty details</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;" id="laptop-grid"></div>
+
+        <!-- ORDER MODAL -->
+        <div id="order-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,15,0.95);overflow-y:auto;padding:40px 20px;box-sizing:border-box;">
+            <div style="max-width:540px;margin:0 auto;background:rgba(255,255,255,0.05);border:1px solid rgba(39,174,96,0.3);border-radius:16px;padding:40px;">
+                <button onclick="closeModal()" style="float:right;background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;">✕</button>
+                <div id="modal-content"></div>
+                <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.1);padding-top:24px;">
+                    <h4 style="color:#2ecc71;margin:0 0 16px;">Complete Your Order</h4>
+                    <input id="order-name" placeholder="Your Full Name" style="width:100%;padding:10px 14px;margin-bottom:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;box-sizing:border-box;">
+                    <input id="order-email" placeholder="Email Address" style="width:100%;padding:10px 14px;margin-bottom:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;box-sizing:border-box;">
+                    <input id="order-phone" placeholder="Phone Number" style="width:100%;padding:10px 14px;margin-bottom:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;box-sizing:border-box;">
+                    <select id="order-payment" style="width:100%;padding:10px 14px;margin-bottom:20px;background:rgba(30,40,35,0.9);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;box-sizing:border-box;">
+                        <option value="">-- Select Payment Method --</option>
+                        <option>M-Pesa</option>
+                        <option>Bank Transfer</option>
+                        <option>Cash on Delivery</option>
+                        <option>Credit / Debit Card</option>
+                    </select>
+                    <button onclick="placeOrder()" style="width:100%;padding:13px;background:linear-gradient(135deg,#27ae60,#2ecc71);border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">Place Order</button>
+                    <div id="order-msg" style="display:none;margin-top:14px;padding:12px;border-radius:8px;text-align:center;font-size:14px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    const laptops = [
+        {
+            id: 1, name: "HP EliteBook 840 G9",
+            specs: "Intel Core i7-1255U · 16GB RAM · 512GB SSD · 14\" FHD IPS",
+            price: "KES 115,000",
+            delivery: "2–3 business days",
+            warranty: "1 Year On-Site Warranty",
+            emoji: "💼"
+        },
+        {
+            id: 2, name: "Dell XPS 15 9530",
+            specs: "Intel Core i9-13900H · 32GB RAM · 1TB SSD · 15.6\" OLED Touch",
+            price: "KES 245,000",
+            delivery: "3–5 business days",
+            warranty: "2 Year Comprehensive Warranty",
+            emoji: "🖥️"
+        },
+        {
+            id: 3, name: "Lenovo ThinkPad E15",
+            specs: "AMD Ryzen 5 5625U · 16GB RAM · 512GB SSD · 15.6\" FHD",
+            price: "KES 89,000",
+            delivery: "1–2 business days (in stock)",
+            warranty: "1 Year Carry-In Warranty",
+            emoji: "🔵"
+        },
+        {
+            id: 4, name: "Apple MacBook Air M2",
+            specs: "Apple M2 · 8GB RAM · 256GB SSD · 13.6\" Liquid Retina",
+            price: "KES 185,000",
+            delivery: "3–5 business days",
+            warranty: "1 Year Apple Limited Warranty",
+            emoji: "🍎"
+        },
+        {
+            id: 5, name: "Asus VivoBook 15",
+            specs: "Intel Core i5-1235U · 8GB RAM · 512GB SSD · 15.6\" FHD",
+            price: "KES 72,000",
+            delivery: "1–2 business days (in stock)",
+            warranty: "1 Year Carry-In Warranty",
+            emoji: "⚡"
+        },
+        {
+            id: 6, name: "Microsoft Surface Pro 9",
+            specs: "Intel Core i5-1235U · 16GB RAM · 256GB SSD · 13\" PixelSense",
+            price: "KES 145,000",
+            delivery: "4–6 business days",
+            warranty: "1 Year Microsoft Warranty",
+            emoji: "🪟"
+        }
+    ];
+
+    let selectedLaptop = null;
+
+    function renderLaptops() {
+        const grid = document.getElementById('laptop-grid');
+        grid.innerHTML = laptops.map(l => `
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(39,174,96,0.2);border-radius:14px;padding:28px;transition:border-color .3s;"
+                 onmouseover="this.style.borderColor='rgba(39,174,96,0.6)'" onmouseout="this.style.borderColor='rgba(39,174,96,0.2)'">
+                <div style="font-size:40px;margin-bottom:12px;">${l.emoji}</div>
+                <h3 style="color:#fff;margin:0 0 8px;font-size:1.05rem;">${l.name}</h3>
+                <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 16px;line-height:1.6;">${l.specs}</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <span style="color:#2ecc71;font-size:1.2rem;font-weight:700;">${l.price}</span>
+                    <span style="color:rgba(255,255,255,0.4);font-size:12px;">🚚 ${l.delivery}</span>
+                </div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:20px;">🛡️ ${l.warranty}</div>
+                <button onclick="openModal(${l.id})"
+                    style="width:100%;padding:11px;background:linear-gradient(135deg,#27ae60,#2ecc71);border:none;border-radius:8px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;">
+                    Order This Laptop
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function openModal(id) {
+        selectedLaptop = laptops.find(l => l.id === id);
+        document.getElementById('modal-content').innerHTML = `
+            <h3 style="color:#fff;margin:0 0 6px;font-size:1.2rem;">${selectedLaptop.emoji} ${selectedLaptop.name}</h3>
+            <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 20px;">${selectedLaptop.specs}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;">
+                <div style="background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.2);border-radius:10px;padding:14px;">
+                    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Price</div>
+                    <div style="color:#2ecc71;font-size:1.3rem;font-weight:700;">${selectedLaptop.price}</div>
+                </div>
+                <div style="background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.2);border-radius:10px;padding:14px;">
+                    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Delivery</div>
+                    <div style="color:#fff;font-size:14px;font-weight:600;">${selectedLaptop.delivery}</div>
+                </div>
+            </div>
+            <div style="background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.2);border-radius:10px;padding:14px;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Warranty</div>
+                <div style="color:#fff;font-size:14px;">🛡️ ${selectedLaptop.warranty}</div>
+            </div>
+        `;
+        document.getElementById('order-msg').style.display = 'none';
+        document.getElementById('order-name').value = '';
+        document.getElementById('order-email').value = '';
+        document.getElementById('order-phone').value = '';
+        document.getElementById('order-payment').value = '';
+        document.getElementById('order-modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('order-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function placeOrder() {
+        const name = document.getElementById('order-name').value.trim();
+        const email = document.getElementById('order-email').value.trim();
+        const phone = document.getElementById('order-phone').value.trim();
+        const payment = document.getElementById('order-payment').value;
+        const msg = document.getElementById('order-msg');
+        if (!name || !email || !payment) {
+            msg.style.display = 'block';
+            msg.style.background = 'rgba(231,76,60,0.15)';
+            msg.style.color = '#e74c3c';
+            msg.style.border = '1px solid rgba(231,76,60,0.3)';
+            msg.textContent = 'Please fill in name, email, and payment method.';
+            return;
+        }
+        const orders = JSON.parse(localStorage.getItem('greenoak_bookings')) || [];
+        orders.push({
+            name, email, phone,
+            service: `Laptop Purchase: ${selectedLaptop.name}`,
+            message: `Price: ${selectedLaptop.price} | Payment: ${payment} | Delivery: ${selectedLaptop.delivery} | Warranty: ${selectedLaptop.warranty}`,
+            date: new Date().toLocaleString()
+        });
+        localStorage.setItem('greenoak_bookings', JSON.stringify(orders));
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(39,174,96,0.15)';
+        msg.style.color = '#2ecc71';
+        msg.style.border = '1px solid rgba(39,174,96,0.3)';
+        msg.textContent = `✅ Order placed! We'll contact you at ${email} within 24 hours.`;
+        setTimeout(closeModal, 3000);
+    }
+
+    renderLaptops();
+    </script>
 
     <section class="why-us">
         <h2>Why Choose Us</h2>
