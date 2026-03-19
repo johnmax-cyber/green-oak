@@ -525,13 +525,13 @@ nav a.active::after { width: 100%; }
 }
 
 .admin-sidebar .logo span {
-    color: #6366f1;
+    color: #27ae60;
 }
 
 .admin-sidebar .logo-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #27ae60, #1e8449);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -558,14 +558,14 @@ nav a.active::after { width: 100%; }
 }
 
 .admin-nav-item:hover {
-    background: rgba(99, 102, 241, 0.15);
+    background: rgba(39, 174, 96, 0.15);
     color: #fff;
 }
 
 .admin-nav-item.active {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #27ae60, #1e8449);
     color: #fff;
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 20px rgba(39, 174, 96, 0.4);
 }
 
 .admin-nav-item .nav-icon {
@@ -685,8 +685,8 @@ nav a.active::after { width: 100%; }
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-.stat-card.visitors { --stat-color: #6366f1; }
-.stat-card.bookings { --stat-color: #ec4899; }
+.stat-card.visitors { --stat-color: #27ae60; }
+.stat-card.bookings { --stat-color: #2ecc71; }
 .stat-card.today { --stat-color: #10b981; }
 .stat-card.revenue { --stat-color: #f59e0b; }
 
@@ -779,12 +779,12 @@ nav a.active::after { width: 100%; }
 }
 
 .data-table-header .btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #27ae60, #1e8449);
     color: #fff;
 }
 
 .data-table-header .btn-primary:hover {
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 20px rgba(39, 174, 96, 0.4);
     transform: translateY(-2px);
 }
 
@@ -862,8 +862,8 @@ nav a.active::after { width: 100%; }
 }
 
 .quick-action-btn:hover {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(39, 174, 96, 0.15);
+    border-color: rgba(39, 174, 96, 0.3);
     transform: translateX(4px);
 }
 
@@ -875,7 +875,7 @@ nav a.active::after { width: 100%; }
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    background: rgba(99, 102, 241, 0.2);
+    background: rgba(39, 174, 96, 0.2);
 }
 
 /* Logout Button */
