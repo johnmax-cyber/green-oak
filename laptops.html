@@ -345,10 +345,36 @@
     ];
 
     let selectedLaptop = null;
+    const PRODUCTS_KEY = 'greenoak_products';
+
+    function getProducts() {
+        const products = localStorage.getItem(PRODUCTS_KEY);
+        return products ? JSON.parse(products) : [];
+    }
 
     function renderLaptops() {
         const grid = document.getElementById('laptop-grid');
-        grid.innerHTML = laptops.map(l => `
+        
+        // Get products from localStorage
+        const storedProducts = getProducts();
+        const laptopProducts = storedProducts.filter(p => p.category === 'laptop');
+        
+        // Convert stored products to the same format as default laptops
+        const storedLaptops = laptopProducts.map(p => ({
+            id: p.id,
+            name: p.name,
+            specs: p.description || 'High quality product',
+            price: 'KES ' + Math.round(p.price * 150).toLocaleString(),
+            delivery: '2–5 business days',
+            warranty: '1 Year Warranty',
+            emoji: '💻',
+            isStored: true
+        }));
+        
+        // Combine default laptops with stored products
+        const allLaptops = [...laptops, ...storedLaptops];
+        
+        grid.innerHTML = allLaptops.map(l => `
             <div class="laptop-card">
                 <span class="laptop-emoji">${l.emoji}</span>
                 <h3 class="laptop-name">${l.name}</h3>
