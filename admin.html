@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="admin-page">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -507,37 +507,126 @@
         </div>
     </div>
 
-    <header id="main-header" style="display:none;">
-        <a href="index.html" class="logo">GreenOak <span>Admin</span></a>
-        <nav>
-            <a href="index.html">Website</a>
-            <a href="admin.html" class="active">Dashboard</a>
-            <span class="current-admin-badge" id="current-admin-badge"></span>
-            <a href="#" onclick="doLogout()" style="color:rgba(255,100,100,0.8);">Logout</a>
-        </nav>
-    </header>
+    <!-- Modern Admin Layout -->
+    <div class="admin-wrapper" id="admin-wrapper" style="display:none;">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="logo">
+                <div class="logo-icon">🌿</div>
+                GreenOak
+            </div>
+            
+            <nav class="admin-nav">
+                <div class="admin-nav-section">Main</div>
+                <a href="#" class="admin-nav-item active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="index.html" class="admin-nav-item">
+                    <span class="nav-icon">🌐</span>
+                    View Website
+                </a>
+                
+                <div class="admin-nav-section">Management</div>
+                <a href="#" class="admin-nav-item">
+                    <span class="nav-icon">📦</span>
+                    Products
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="nav-icon">🛒</span>
+                    Orders
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="nav-icon">👥</span>
+                    Customers
+                </a>
+                
+                <div class="admin-nav-section">System</div>
+                <a href="#" class="admin-nav-item" id="sidebar-admin-link" style="display:none;">
+                    <span class="nav-icon">👑</span>
+                    Admin Panel
+                </a>
+                
+                <div class="logout-btn">
+                    <a href="#" class="admin-nav-item" onclick="doLogout()">
+                        <span class="nav-icon">🚪</span>
+                        Logout
+                    </a>
+                </div>
+            </nav>
+        </aside>
 
-    <div class="dashboard" id="main-dashboard" style="display:none;">
-        <h1>Dashboard</h1>
-        <p class="subtitle">Track your bookings and website visitors</p>
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p class="header-subtitle">Welcome back! Here's what's happening today.</p>
+                </div>
+                <div class="admin-user">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </header>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="icon">👥</div>
-                <div class="number" id="visitor-count">0</div>
-                <div class="label">Total Visitors</div>
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="index.html" class="quick-action-btn">
+                    <span class="action-icon">🌐</span>
+                    View Website
+                </a>
+                <a href="#" class="quick-action-btn">
+                    <span class="action-icon">➕</span>
+                    Add Product
+                </a>
+                <a href="#" class="quick-action-btn">
+                    <span class="action-icon">📈</span>
+                    View Reports
+                </a>
+                <a href="#" class="quick-action-btn">
+                    <span class="action-icon">⚙️</span>
+                    Settings
+                </a>
             </div>
-            <div class="stat-card">
-                <div class="icon">📩</div>
-                <div class="number" id="booking-count">0</div>
-                <div class="label">Total Bookings</div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card visitors">
+                    <div class="card-header">
+                        <div class="icon">👥</div>
+                        <span class="trend up">+12.5%</span>
+                    </div>
+                    <div class="number" id="visitor-count">0</div>
+                    <div class="label">Total Visitors</div>
+                </div>
+                <div class="stat-card bookings">
+                    <div class="card-header">
+                        <div class="icon">📩</div>
+                        <span class="trend up">+8.2%</span>
+                    </div>
+                    <div class="number" id="booking-count">0</div>
+                    <div class="label">Total Bookings</div>
+                </div>
+                <div class="stat-card today">
+                    <div class="card-header">
+                        <div class="icon">📅</div>
+                        <span class="trend up">+24%</span>
+                    </div>
+                    <div class="number" id="today-visitors">0</div>
+                    <div class="label">Today's Visitors</div>
+                </div>
+                <div class="stat-card revenue">
+                    <div class="card-header">
+                        <div class="icon">💰</div>
+                        <span class="trend up">+15.3%</span>
+                    </div>
+                    <div class="number">$0</div>
+                    <div class="label">Revenue</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="icon">📅</div>
-                <div class="number" id="today-visitors">0</div>
-                <div class="label">Today's Visitors</div>
-            </div>
-        </div>
 
         <!-- Admin Management Section -->
         <div class="admin-management" id="admin-management" style="display:none;">
@@ -559,14 +648,66 @@
             </form>
         </div>
 
-        <div class="bookings-section">
-            <h2>Recent Bookings</h2>
-            <div id="bookings-list">
-                <p class="no-bookings">No bookings yet</p>
+        <!-- Recent Bookings Table -->
+        <div class="data-table-container">
+            <div class="data-table-header">
+                <h2>Recent Bookings</h2>
+                <button class="btn btn-primary">View All</button>
             </div>
-            <button class="clear-btn" onclick="clearBookings()">Clear All Bookings</button>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-table-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">
+                            No bookings yet
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
+
+        <!-- Admin Management Section -->
+        <div class="admin-management" id="admin-management" style="display:none;">
+            <div class="data-table-container">
+                <div class="data-table-header">
+                    <h2>👑 Admin Management</h2>
+                </div>
+                <div class="admin-success" id="admin-success"></div>
+                <div class="admin-error" id="admin-error"></div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-list"></tbody>
+                </table>
+
+                <form class="add-admin-form" id="add-admin-form" onsubmit="addNewAdmin(event)" style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+                    <input type="email" id="new-admin-email" placeholder="New admin email" required style="flex:1;min-width:200px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;">
+                    <input type="password" id="new-admin-password" placeholder="Password (min 6 chars)" minlength="6" required style="flex:1;min-width:200px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;">
+                    <select id="new-admin-role" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;">
+                        <option value="admin">Admin</option>
+                        <option value="super_admin">Super Admin</option>
+                    </select>
+                    <button type="submit" style="padding:12px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:600;cursor:pointer;">Add Admin</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -708,8 +849,14 @@
             const currentAdmin = getCurrentAdmin();
             
             document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-header').style.display = '';
-            document.getElementById('main-dashboard').style.display = '';
+            // Show new modern admin layout
+            document.getElementById('admin-wrapper').style.display = '';
+            
+            // Update user info in sidebar
+            const adminEmail = localStorage.getItem('greenoak_admin_email') || 'admin@greenoak.com';
+            const userName = adminEmail.split('@')[0];
+            document.getElementById('user-name').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+            document.getElementById('user-avatar').textContent = userName.charAt(0).toUpperCase();
             
             const badge = document.getElementById('current-admin-badge');
             badge.textContent = '👤 ' + currentAdmin.email;
