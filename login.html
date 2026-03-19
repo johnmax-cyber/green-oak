@@ -547,6 +547,29 @@
     </div>
 
     <script>
+        // Global error handler
+        window.onerror = function(msg, url, line, col, error) {
+            console.error('Error:', msg, 'Line:', line);
+            return false;
+        };
+        
+        try {
+        // Clear old localStorage data that might be incompatible
+        try {
+            const oldData = localStorage.getItem('greenoak_admin_accounts');
+            if (oldData) {
+                const parsed = JSON.parse(oldData);
+                // Check if old data has passwordHash (new format) vs password (old format)
+                if (parsed.length > 0 && parsed[0].passwordHash) {
+                    // Already new format, keep it
+                } else if (parsed.length > 0 && parsed[0].password) {
+                    // Old format - clear it to avoid conflicts
+                    console.log('Clearing old admin data format');
+                    localStorage.removeItem('greenoak_admin_accounts');
+                }
+            }
+        } catch(e) {}
+        
         // Theme Management
         function getTheme() {
             return localStorage.getItem('greenoak_theme') || 'light';
@@ -868,6 +891,10 @@
         document.getElementById('password').addEventListener('input', function() {
             document.getElementById('error-msg').style.display = 'none';
         });
+        
+        } catch (e) {
+            console.error('Script error:', e);
+        }
     </script>
 </body>
 </html>
