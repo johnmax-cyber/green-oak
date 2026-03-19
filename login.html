@@ -546,6 +546,28 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyClafvwx3i2Cs-9YjvIKLntTTMHczh3S5o",
+            authDomain: "green-oak-ddc98.firebaseapp.com",
+            projectId: "green-oak-ddc98",
+            storageBucket: "green-oak-ddc98.firebasestorage.app",
+            messagingSenderId: "717518000741",
+            appId: "1:717518000741:web:aef400ec572ac30e226c8c",
+            measurementId: "G-NXC8T97JQ3"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log("Firebase initialized successfully");
+    </script>
+
     <script>
         // Global error handler
         window.onerror = function(msg, url, line, col, error) {
