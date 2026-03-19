@@ -383,11 +383,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
 
     <script>
-        // Check if admin account exists
-        const adminAccount = JSON.parse(localStorage.getItem('greenoak_admin_account'));
+        // Storage keys - matching admin.html format
+        const ADMIN_ACCOUNTS_KEY = 'greenoak_admin_accounts';
+        const LOGGED_IN_KEY = 'greenoak_admin_logged_in';
+        
+        // Check if admin accounts exist - create default if not
+        let adminAccounts = JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS_KEY));
+        
+        // Create default admin account if none exists
+        if (!adminAccounts || adminAccounts.length === 0) {
+            adminAccounts = [{ 
+                email: 'admin@greenoak.com', 
+                password: 'admin123',
+                role: 'super_admin',
+                created: new Date().toISOString()
+            }];
+            localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(adminAccounts));
+            console.log('Default admin account created');
+        }
 
         // Check if already logged in
-        if (localStorage.getItem('greenoak_admin_logged_in') === 'true') {
+        if (localStorage.getItem(LOGGED_IN_KEY) === 'true') {
             window.location.href = 'admin.html';
         }
 
@@ -430,8 +446,15 @@
                 return;
             }
 
-            // Save admin account
-            localStorage.setItem('greenoak_admin_account', JSON.stringify({ email: email, password: password }));
+            // Get existing accounts and add new one
+            let accounts = JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS_KEY)) || [];
+            accounts.push({
+                email: email,
+                password: password,
+                role: 'admin',
+                created: new Date().toISOString()
+            });
+            localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(accounts));
             
             alert('Admin account created successfully! Please login.');
             showLogin();
@@ -474,12 +497,16 @@
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('remember-me').checked;
 
-            // Check against stored admin account
-            const storedAccount = JSON.parse(localStorage.getItem('greenoak_admin_account'));
+            // Check against stored admin accounts (array format)
+            const storedAccounts = JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS_KEY));
+            const matchedAccount = storedAccounts.find(acc => 
+                (acc.email === email || acc.email === email.toLowerCase()) && acc.password === password
+            );
             
-            if (storedAccount && email === storedAccount.email && password === storedAccount.password) {
+            if (matchedAccount) {
                 // Save login state
-                localStorage.setItem('greenoak_admin_logged_in', 'true');
+                localStorage.setItem(LOGGED_IN_KEY, 'true');
+                localStorage.setItem('greenoak_logged_in_admin', JSON.stringify(matchedAccount));
                 
                 // Remember credentials if checkbox is checked
                 if (rememberMe) {
