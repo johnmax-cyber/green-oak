@@ -569,6 +569,21 @@
     </div>
 
     <script>
+        try {
+        // Clear old localStorage data that might be incompatible
+        try {
+            const oldData = localStorage.getItem('greenoak_admin_accounts');
+            if (oldData) {
+                const parsed = JSON.parse(oldData);
+                if (parsed.length > 0 && parsed[0].passwordHash) {
+                    // Already new format
+                } else if (parsed.length > 0 && parsed[0].password) {
+                    console.log('Clearing old admin data format');
+                    localStorage.removeItem('greenoak_admin_accounts');
+                }
+            }
+        } catch(e) {}
+        
         // Theme Management
         function getTheme() {
             return localStorage.getItem('greenoak_theme') || 'light';
@@ -903,6 +918,10 @@
         }
 
         checkAuth();
+        
+        } catch (e) {
+            console.error('Admin script error:', e);
+        }
     </script>
 </body>
 </html>
