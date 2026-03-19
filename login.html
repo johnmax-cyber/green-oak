@@ -712,7 +712,7 @@
         }
 
         // Setup new admin
-        document.getElementById('setup-form').addEventListener('submit', function(e) {
+        document.getElementById('setup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('setup-email').value.trim();
