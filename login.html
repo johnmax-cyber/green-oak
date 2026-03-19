@@ -715,6 +715,8 @@
         document.getElementById('setup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('Setup form submitted');
+            
             const email = document.getElementById('setup-email').value.trim();
             const password = document.getElementById('setup-password').value;
             const confirm = document.getElementById('setup-confirm').value;
@@ -722,6 +724,8 @@
             const accounts = getAdminAccounts();
             const errorEl = document.getElementById('setup-error');
             const successEl = document.getElementById('setup-success');
+
+            console.log('Email:', email, 'Role:', role, 'Accounts:', accounts.length);
 
             if (accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
                 errorEl.textContent = 'An admin with this email already exists';
@@ -745,25 +749,17 @@
                 return;
             }
 
-            // Security: Hash password before storing
-            let hashedPassword;
-            try {
-                hashedPassword = await hashPassword(password);
-            } catch (err) {
-                console.error('Hash error:', err);
-                errorEl.textContent = 'Error hashing password. Please try again.';
-                errorEl.style.display = 'block';
-                successEl.style.display = 'none';
-                return;
-            }
+            // Temporarily store password directly (for testing)
             const newAdmin = {
                 email: email,
-                passwordHash: hashedPassword,
+                password: password,
                 role: role,
                 createdAt: new Date().toISOString()
             };
             accounts.push(newAdmin);
             saveAdminAccounts(accounts);
+            
+            console.log('Admin added:', newAdmin);
             
             errorEl.style.display = 'none';
             successEl.textContent = '✓ Admin "' + email + '" created successfully!';
@@ -806,13 +802,17 @@
         });
 
         // Login
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            console.log('Login form submitted');
             
             const adminIndex = document.getElementById('email-select').value;
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('remember-me').checked;
             const accounts = getAdminAccounts();
+
+            console.log('Admin index:', adminIndex, 'Accounts:', accounts.length);
 
             if (adminIndex === '') {
                 document.getElementById('error-msg').textContent = 'Please select an admin account';
@@ -828,9 +828,10 @@
                 return;
             }
             
-            // Security: Compare hashed password
-            const hashedInput = await hashPassword(password);
-            if (hashedInput === selectedAdmin.passwordHash) {
+            console.log('Selected admin:', selectedAdmin.email, 'Password match:', password === selectedAdmin.password);
+            
+            // Compare password directly (for testing)
+            if (password === selectedAdmin.password) {
                 localStorage.setItem(LOGGED_IN_KEY, 'true');
                 
                 // Security: Store only non-sensitive data

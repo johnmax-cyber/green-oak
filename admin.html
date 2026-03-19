@@ -707,9 +707,8 @@
                 return;
             }
             
-            // Security: Compare hashed password
-            const hashedInput = await hashPassword(password);
-            if (hashedInput === selectedAdmin.passwordHash) {
+            // Compare password directly (for testing)
+            if (password === selectedAdmin.password) {
                 localStorage.setItem(LOGGED_IN_KEY, 'true');
                 
                 // Security: Store only non-sensitive data
@@ -802,21 +801,10 @@
                 return;
             }
 
-            // Security: Hash password before storing
-            let hashedPassword;
-            try {
-                hashedPassword = await hashPassword(password);
-            } catch (err) {
-                console.error('Hash error:', err);
-                errorEl.textContent = 'Error hashing password. Please try again.';
-                errorEl.style.display = 'block';
-                successEl.style.display = 'none';
-                return;
-            }
-
+            // Temporarily store password directly (for testing)
             accounts.push({
                 email: email,
-                passwordHash: hashedPassword,
+                password: password,
                 role: role,
                 createdAt: new Date().toISOString()
             });
