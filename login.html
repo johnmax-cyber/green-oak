@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - GreenOak Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode (Default) */
+            --bg-primary: #fafbfc;
+            --bg-secondary: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-subtle: rgba(37, 99, 235, 0.08);
+            --error: #dc2626;
+            --success: #16a34a;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode */
+            --bg-primary: #030712;
+            --bg-secondary: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #60a5fa;
+            --accent-subtle: rgba(59, 130, 246, 0.15);
+            --error: #f87171;
+            --success: #4ade80;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, color 0.3s ease;
+            padding: 20px;
+        }
+
+        /* Background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: var(--bg-primary);
+            background-image: 
+                radial-gradient(at 40% 20%, var(--accent-subtle) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, var(--accent-subtle) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, var(--accent-subtle) 0px, transparent 50%);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-subtle);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle .icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* Login Card */
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Logo */
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header .logo {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .login-header .logo span {
+            color: var(--accent);
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.646 5.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        [data-theme="dark"] .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.646 5.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        }
+
+        .form-group select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Password Input */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 44px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent);
+        }
+
+        /* Form Options */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot-password:hover {
+            color: var(--accent-hover);
+        }
+
+        /* Button */
+        .login-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        /* Google Button */
+        .google-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .google-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+        }
+
+        .google-btn img {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Messages */
+        .error-msg {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .success-msg {
+            color: var(--success);
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            background: rgba(22, 163, 74, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(22, 163, 74, 0.2);
+        }
+
+        /* Setup Section */
+        .setup-note {
+            margin-top: 24px;
+            padding: 14px;
+            background: var(--accent-subtle);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .setup-note strong {
+            color: var(--accent);
+        }
+
+        .info-note {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Back Link */
+        .back-link {
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .back-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .back-link a:hover {
+            color: var(--accent);
+        }
+
+        /* Hide/Show Forms */
+        #setup-form {
+            display: none;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-text">Dark</span>
+    </button>
+
+    <div class="login-card">
+        <div class="login-header">
+            <a href="index.html" class="logo">GreenOak <span>Admin</span></a>
+            <p>Sign in to your dashboard</p>
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email-select">Admin Account</label>
+                <select id="email-select" required>
+                    <option value="">Select admin account</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <button type="button" class="toggle-password" id="toggle-password">
+                        <span class="eye-icon">👁</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember-me">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-password" onclick="showSetup(); return false;" id="setup-link">Add Admin</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+            
+            <p class="error-msg" id="error-msg">Invalid password</p>
+        </form>
+
+        <!-- Setup Form -->
+        <form id="setup-form">
+            <h3 style="text-align: center; margin-bottom: 8px; color: var(--accent); font-size: 18px; font-weight: 600;">Add New Admin</h3>
+            
+            <div class="info-note" id="setup-info">
+                Create additional admin accounts. First admin becomes Super Admin.
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="setup-email">Email Address</label>
+                <input type="email" id="setup-email" placeholder="admin@greenoak.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="setup-password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="setup-password" placeholder="Min. 6 characters" required>
+                    <button type="button" class="toggle-password" onclick="toggleSetupPassword()">
+                        <span class="eye-icon">👁</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="setup-confirm">Confirm Password</label>
+                <input type="password" id="setup-confirm" placeholder="Confirm your password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="setup-role">Role</label>
+                <select id="setup-role">
+                    <option value="admin">Admin</option>
+                    <option value="super_admin">Super Admin</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="login-btn">Create Admin</button>
+            
+            <p class="error-msg" id="setup-error"></p>
+            <p class="success-msg" id="setup-success"></p>
+            
+            <p style="text-align: center; margin-top: 16px;">
+                <a href="#" onclick="showLogin(); return false;" style="color: var(--text-muted); font-size: 13px; text-decoration: none;">← Back to Login</a>
+            </p>
+        </form>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <button class="google-btn" id="google-btn">
+            <img src="https://www.google.com/favicon.ico" alt="Google">
+            Continue with Google
+        </button>
+
+        <div class="setup-note" id="setup-note">
+            <strong>First time?</strong> Click "Add Admin" to create your admin account.
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Website</a>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function getTheme() {
+            return localStorage.getItem('greenoak_theme') || 'light';
+        }
+
+        function setTheme(theme) {
+            localStorage.setItem('greenoak_theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', function() {
+            setTheme(getTheme());
+        });
+
+        // Storage keys
+        const ADMIN_ACCOUNTS_KEY = 'greenoak_admin_accounts';
+        const LOGGED_IN_KEY = 'greenoak_admin_logged_in';
+        const LOGGED_IN_ADMIN_KEY = 'greenoak_logged_in_admin';
+        const REMEMBER_TOKEN_KEY = 'greenoak_remember_token';
+
+        // Security: HTML escape function to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Security: SHA-256 hash function for password hashing
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Generate a secure random token
+        function generateToken() {
+            const array = new Uint8Array(32);
+            crypto.getRandomValues(array);
+            return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function getAdminAccounts() {
+            const accounts = localStorage.getItem(ADMIN_ACCOUNTS_KEY);
+            return accounts ? JSON.parse(accounts) : [];
+        }
+
+        function saveAdminAccounts(accounts) {
+            localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(accounts));
+        }
+
+        function getCurrentAdmin() {
+            const adminData = localStorage.getItem(LOGGED_IN_ADMIN_KEY);
+            return adminData ? JSON.parse(adminData) : null;
+        }
+
+        // Store token for remember me (not password)
+        function setRememberToken(adminIndex, token) {
+            localStorage.setItem(REMEMBER_TOKEN_KEY, JSON.stringify({ index: adminIndex, token: token }));
+        }
+
+        function getRememberToken() {
+            const data = localStorage.getItem(REMEMBER_TOKEN_KEY);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function clearRememberToken() {
+            localStorage.removeItem(REMEMBER_TOKEN_KEY);
+        }
+
+        // Check if already logged in
+        if (localStorage.getItem(LOGGED_IN_KEY) === 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        // Populate admin dropdown
+        function populateAdminDropdown() {
+            const accounts = getAdminAccounts();
+            const select = document.getElementById('email-select');
+            const setupNote = document.getElementById('setup-note');
+            
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+
+            if (accounts.length === 0) {
+                setupNote.style.display = 'block';
+                return;
+            }
+
+            setupNote.style.display = 'none';
+            
+            accounts.forEach((admin, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = admin.email + (admin.role === 'super_admin' ? ' (Super Admin)' : '');
+                select.appendChild(option);
+            });
+        }
+
+        // Show setup form
+        function showSetup() {
+            document.getElementById('login-form').style.display = 'none';
+            document.querySelector('.divider').style.display = 'none';
+            document.getElementById('google-btn').parentElement.style.display = 'none';
+            document.getElementById('setup-note').style.display = 'none';
+            document.getElementById('setup-form').style.display = 'block';
+            
+            const accounts = getAdminAccounts();
+            const roleSelect = document.getElementById('setup-role');
+            const setupInfo = document.getElementById('setup-info');
+            
+            if (accounts.length === 0) {
+                setupInfo.innerHTML = '👑 Creating the <strong>first admin</strong>. This will be the <strong>Super Admin</strong> account.';
+                roleSelect.value = 'super_admin';
+                roleSelect.disabled = true;
+            } else {
+                setupInfo.innerHTML = '➕ Add more admins. Only Super Admins can manage other admins.';
+                roleSelect.disabled = false;
+            }
+        }
+
+        // Show login form
+        function showLogin() {
+            document.getElementById('setup-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            document.querySelector('.divider').style.display = 'flex';
+            document.getElementById('google-btn').parentElement.style.display = 'block';
+            populateAdminDropdown();
+        }
+
+        // Toggle password visibility
+        function toggleSetupPassword() {
+            const passwordInput = document.getElementById('setup-password');
+            const eyeIcon = document.querySelector('#setup-form .eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.textContent = '👁';
+            }
+        }
+
+        // Setup new admin
+        document.getElementById('setup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('setup-email').value.trim();
+            const password = document.getElementById('setup-password').value;
+            const confirm = document.getElementById('setup-confirm').value;
+            const role = document.getElementById('setup-role').value;
+            const accounts = getAdminAccounts();
+            const errorEl = document.getElementById('setup-error');
+            const successEl = document.getElementById('setup-success');
+
+            if (accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+                errorEl.textContent = 'An admin with this email already exists';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+
+            if (password !== confirm) {
+                errorEl.textContent = 'Passwords do not match';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+
+            // Security: Stronger password policy
+            if (password.length < 8) {
+                errorEl.textContent = 'Password must be at least 8 characters';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            if (!/[A-Z]/.test(password)) {
+                errorEl.textContent = 'Password must contain at least one uppercase letter';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            if (!/[a-z]/.test(password)) {
+                errorEl.textContent = 'Password must contain at least one lowercase letter';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+            if (!/[0-9]/.test(password)) {
+                errorEl.textContent = 'Password must contain at least one number';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+
+            // Security: Hash password before storing
+            const hashedPassword = await hashPassword(password);
+            const newAdmin = {
+                email: email,
+                passwordHash: hashedPassword,
+                role: role,
+                createdAt: new Date().toISOString()
+            };
+            accounts.push(newAdmin);
+            saveAdminAccounts(accounts);
+            
+            errorEl.style.display = 'none';
+            successEl.textContent = '✓ Admin "' + email + '" created successfully!';
+            successEl.style.display = 'block';
+            
+            document.getElementById('setup-email').value = '';
+            document.getElementById('setup-password').value = '';
+            document.getElementById('setup-confirm').value = '';
+            
+            setTimeout(function() {
+                showLogin();
+            }, 2000);
+        });
+
+        // Load saved credentials (using token, not password)
+        window.addEventListener('DOMContentLoaded', function() {
+            populateAdminDropdown();
+
+            const rememberData = getRememberToken();
+            const rememberMe = localStorage.getItem('greenoak_remember_me');
+
+            if (rememberMe === 'true' && rememberData && rememberData.index !== undefined) {
+                document.getElementById('email-select').value = rememberData.index;
+                document.getElementById('remember-me').checked = true;
+            }
+        });
+
+        // Toggle password visibility
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = this.querySelector('.eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.textContent = '👁';
+            }
+        });
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const adminIndex = document.getElementById('email-select').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            const accounts = getAdminAccounts();
+
+            if (adminIndex === '') {
+                document.getElementById('error-msg').textContent = 'Please select an admin account';
+                document.getElementById('error-msg').style.display = 'block';
+                return;
+            }
+
+            const selectedAdmin = accounts[parseInt(adminIndex)];
+            
+            if (!selectedAdmin) {
+                document.getElementById('error-msg').textContent = 'Admin account not found';
+                document.getElementById('error-msg').style.display = 'block';
+                return;
+            }
+            
+            // Security: Compare hashed password
+            const hashedInput = await hashPassword(password);
+            if (hashedInput === selectedAdmin.passwordHash) {
+                localStorage.setItem(LOGGED_IN_KEY, 'true');
+                
+                // Security: Store only non-sensitive data
+                const safeAdminData = {
+                    email: selectedAdmin.email,
+                    role: selectedAdmin.role,
+                    createdAt: selectedAdmin.createdAt
+                };
+                localStorage.setItem(LOGGED_IN_ADMIN_KEY, JSON.stringify(safeAdminData));
+                
+                if (rememberMe) {
+                    // Security: Store token instead of password
+                    const token = generateToken();
+                    setRememberToken(adminIndex, token);
+                    localStorage.setItem('greenoak_remember_me', 'true');
+                } else {
+                    clearRememberToken();
+                    localStorage.setItem('greenoak_remember_me', 'false');
+                }
+                
+                window.location.href = 'admin.html';
+            } else {
+                document.getElementById('error-msg').textContent = 'Invalid password';
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        });
+
+        // Google Login
+        document.getElementById('google-btn').addEventListener('click', function() {
+            alert('Google Login requires Firebase setup. Click "Add Admin" to create admin accounts.');
+        });
+
+        // Hide error when typing
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('error-msg').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
