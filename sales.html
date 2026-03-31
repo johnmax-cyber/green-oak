@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Sales - GreenOak Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0a0a0a',
+                        secondary: '#141414',
+                        accent: '#2ecc71',
+                        'accent-hover': '#27ae60',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(39, 174, 96, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(46, 204, 113, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .product-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(46, 204, 113, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(46, 204, 113, 0.2);
+        }
+
+        .product-image {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .verified-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            z-index: 10;
+        }
+
+        .verified-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sold-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .sold-watermark {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 48px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            transform: rotate(-15deg);
+        }
+
+        .sold-image {
+            filter: grayscale(100%);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .whatsapp-btn:hover {
+            background: linear-gradient(135deg, #128C7E, #075E54);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .price-tag {
+            color: #2ecc71;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .condition-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .condition-new {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+        }
+
+        .condition-refurbished {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.4);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(46, 204, 113, 0.3);
+            border-top-color: #2ecc71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.5);
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary/80 backdrop-blur-lg border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="font-display text-2xl font-bold">
+                    Green<span class="text-accent">Oak</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-white/70 hover:text-white transition">Home</a>
+                    <a href="laptops.html" class="text-white/70 hover:text-white transition">Laptops</a>
+                    <a href="services.html" class="text-white/70 hover:text-white transition">Services</a>
+                    <a href="sales.html" class="text-accent font-semibold">Sales</a>
+                    <a href="contact.html" class="text-white/70 hover:text-white transition">Contact</a>
+                </div>
+                <a href="login.html" class="bg-accent hover:bg-accent-hover text-white px-6 py-2 rounded-full font-semibold transition">
+                    Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="font-display text-4xl md:text-5xl font-bold mb-4">
+                Premium <span class="text-accent">Computer Sales</span>
+            </h1>
+            <p class="text-white/70 text-lg max-w-2xl mx-auto">
+                Discover our curated selection of high-quality laptops and computers. 
+                Every device is thoroughly tested and comes with warranty.
+            </p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button class="filter-btn active" data-filter="all">All Products</button>
+            <button class="filter-btn" data-filter="Laptops">Laptops</button>
+            <button class="filter-btn" data-filter="Desktops">Desktops</button>
+            <button class="filter-btn" data-filter="Accessories">Accessories</button>
+            <button class="filter-btn" data-filter="New">New</button>
+            <button class="filter-btn" data-filter="Refurbished">Refurbished</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Products will be loaded here -->
+            <div class="col-span-full flex justify-center py-20">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-20">
+            <svg class="w-24 h-24 mx-auto text-white/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-white/70 mb-2">No products found</h3>
+            <p class="text-white/50">Try adjusting your filters or check back later.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-secondary/50 border-t border-white/10 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-white/50 text-sm">
+                © 2024 GreenOak Technologies. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = localStorage.getItem('greenoak_supabase_url') || window.GREENOAK_SUPABASE_URL || 'https://bxjsxhutoevieieofagg.supabase.co';
+        const SUPABASE_ANON_KEY = localStorage.getItem('greenoak_supabase_anon_key') || window.GREENOAK_SUPABASE_ANON_KEY || 'sb_publishable_wKpUQTg1zL18-6XAP50qyw_JKEK1Ywa';
+        const isSupabaseConfigured = () => (
+            SUPABASE_URL &&
+            SUPABASE_ANON_KEY &&
+            !SUPABASE_URL.includes('YOUR_SUPABASE_URL') &&
+            !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')
+        );
+        const supabase = isSupabaseConfigured()
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        // Supabase Storage public URL base
+        const STORAGE_BASE_URL = `${SUPABASE_URL}/storage/v1/object/public/product-images/`;
+
+        // WhatsApp number
+        const WHATSAPP_NUMBER = '254701776778';
+
+        // Current filter
+        let currentFilter = 'all';
+
+        // Load products from Supabase
+        async function loadProducts() {
+            if (!isSupabaseConfigured()) {
+                document.getElementById('products-grid').innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <div class="text-6xl mb-4">⚠️</div>
+                        <h3 class="text-2xl font-semibold mb-2">Store Setup Needed</h3>
+                        <p class="text-white/70 max-w-2xl mx-auto">
+                            Supabase is not configured yet. Add the project URL and anon key before testing live inventory on this page.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('inventory')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                renderProducts(data);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products-grid').innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <p class="text-red-400">Error loading products. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render products to the grid
+        function renderProducts(products) {
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            // Filter products
+            let filteredProducts = products;
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'New' || currentFilter === 'Refurbished') {
+                    filteredProducts = products.filter(p => p.condition === currentFilter);
+                } else {
+                    filteredProducts = products.filter(p => p.category === currentFilter);
+                }
+            }
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
+        }
+
+        // Create product card HTML
+        function createProductCard(product) {
+            const imageUrl = product.image_urls && product.image_urls.length > 0
+                ? `${STORAGE_BASE_URL}${product.image_urls[0]}`
+                : 'https://via.placeholder.com/400x300?text=No+Image';
+
+            const isSold = product.status === 'sold';
+            const isRefurbished = product.condition === 'Refurbished';
+
+            const whatsappMessage = encodeURIComponent(
+                `Hello Green Oak, I'm interested in the ${product.name} listed for KSh ${product.price.toLocaleString()}. Can you confirm the warranty and battery health?`
+            );
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+            const specs = product.specs || {};
+            const specsHtml = Object.entries(specs).slice(0, 3).map(([key, value]) => `
+                <div class="flex justify-between text-sm">
+                    <span class="text-white/50 capitalize">${key.replace('_', ' ')}</span>
+                    <span class="text-white/80">${value}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${imageUrl}" alt="${product.name}" class="${isSold ? 'sold-image' : ''}">
+                        
+                        ${isRefurbished ? `
+                            <div class="verified-badge">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                Technician Verified
+                            </div>
+                        ` : ''}
+                        
+                        ${isSold ? `
+                            <div class="sold-overlay">
+                                <span class="sold-watermark">SOLD</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="condition-badge ${product.condition === 'New' ? 'condition-new' : 'condition-refurbished'}">
+                                ${product.condition}
+                            </span>
+                            <span class="text-white/50 text-sm">${product.category}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold mb-2">${product.name}</h3>
+                        <p class="text-white/60 text-sm mb-4 line-clamp-2">${product.description}</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            ${specsHtml}
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="price-tag">KSh ${product.price.toLocaleString()}</span>
+                        </div>
+                        
+                        ${!isSold ? `
+                            <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-btn">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                                Inquire via WhatsApp
+                            </a>
+                        ` : `
+                            <button class="whatsapp-btn opacity-50 cursor-not-allowed" disabled>
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                                Sold Out
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                loadProducts();
+            });
+        });
+
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>

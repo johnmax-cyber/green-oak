@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - GreenOak Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0a0a0a',
+                        secondary: '#141414',
+                        accent: '#2ecc71',
+                        'accent-hover': '#27ae60',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(39, 174, 96, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(46, 204, 113, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .product-container {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(46, 204, 113, 0.1);
+        }
+
+        .product-image-main {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .product-image-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .verified-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            z-index: 10;
+        }
+
+        .verified-badge svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sold-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .sold-watermark {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 64px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            transform: rotate(-15deg);
+        }
+
+        .sold-image {
+            filter: grayscale(100%);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .whatsapp-btn:hover {
+            background: linear-gradient(135deg, #128C7E, #075E54);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .price-tag {
+            color: #2ecc71;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .condition-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .condition-new {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+        }
+
+        .condition-refurbished {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.4);
+        }
+
+        .spec-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(46, 204, 113, 0.3);
+            border-top-color: #2ecc71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary/80 backdrop-blur-lg border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="font-display text-2xl font-bold">
+                    Green<span class="text-accent">Oak</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-white/70 hover:text-white transition">Home</a>
+                    <a href="laptops.html" class="text-white/70 hover:text-white transition">Laptops</a>
+                    <a href="services.html" class="text-white/70 hover:text-white transition">Services</a>
+                    <a href="sales.html" class="text-accent font-semibold">Sales</a>
+                    <a href="contact.html" class="text-white/70 hover:text-white transition">Contact</a>
+                </div>
+                <a href="login.html" class="bg-accent hover:bg-accent-hover text-white px-6 py-2 rounded-full font-semibold transition">
+                    Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <!-- Back Button -->
+        <a href="sales.html" class="inline-flex items-center gap-2 text-white/70 hover:text-accent transition mb-8">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Sales
+        </a>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="flex justify-center py-20">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Product Content -->
+        <div id="product-content" class="hidden">
+            <div class="product-container p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Product Images -->
+                    <div>
+                        <div class="product-image-main mb-4" id="main-image-container">
+                            <img id="main-image" src="" alt="Product Image">
+                            <div id="verified-badge" class="verified-badge hidden">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                Technician Verified
+                            </div>
+                            <div id="sold-overlay" class="sold-overlay hidden">
+                                <span class="sold-watermark">SOLD</span>
+                            </div>
+                        </div>
+                        <div id="thumbnails" class="flex gap-4 overflow-x-auto pb-2">
+                            <!-- Thumbnails will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <span id="condition-badge" class="condition-badge"></span>
+                            <span id="category" class="text-white/50"></span>
+                        </div>
+
+                        <h1 id="product-name" class="font-display text-3xl md:text-4xl font-bold mb-4"></h1>
+                        
+                        <p id="product-description" class="text-white/70 text-lg mb-6"></p>
+
+                        <div class="mb-8">
+                            <span id="product-price" class="price-tag"></span>
+                        </div>
+
+                        <!-- Specifications -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold mb-4">Specifications</h3>
+                            <div id="specs-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Specs will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Button -->
+                        <div id="whatsapp-container">
+                            <!-- WhatsApp button will be loaded here -->
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10">
+                            <h4 class="font-semibold mb-3">What's Included</h4>
+                            <ul class="space-y-2 text-white/70">
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    6-month warranty on all refurbished devices
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Free delivery within Nairobi
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Technical support included
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Quality assurance testing
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden text-center py-20">
+            <svg class="w-24 h-24 mx-auto text-red-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-red-400 mb-2">Product Not Found</h3>
+            <p class="text-white/50 mb-6">The product you're looking for doesn't exist or has been removed.</p>
+            <a href="sales.html" class="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-full font-semibold transition">
+                Browse All Products
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-secondary/50 border-t border-white/10 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-white/50 text-sm">
+                © 2024 GreenOak Technologies. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = localStorage.getItem('greenoak_supabase_url') || window.GREENOAK_SUPABASE_URL || 'https://bxjsxhutoevieieofagg.supabase.co';
+        const SUPABASE_ANON_KEY = localStorage.getItem('greenoak_supabase_anon_key') || window.GREENOAK_SUPABASE_ANON_KEY || 'sb_publishable_wKpUQTg1zL18-6XAP50qyw_JKEK1Ywa';
+        const isSupabaseConfigured = () => (
+            SUPABASE_URL &&
+            SUPABASE_ANON_KEY &&
+            !SUPABASE_URL.includes('YOUR_SUPABASE_URL') &&
+            !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')
+        );
+        const supabase = isSupabaseConfigured()
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        // Supabase Storage public URL base
+        const STORAGE_BASE_URL = `${SUPABASE_URL}/storage/v1/object/public/product-images/`;
+
+        // WhatsApp number
+        const WHATSAPP_NUMBER = '254701776778';
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // Load product details
+        async function loadProduct() {
+            if (!productId) {
+                showError();
+                return;
+            }
+
+            if (!isSupabaseConfigured()) {
+                showError('Supabase is not configured yet. Add the project URL and anon key before loading product details.');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('inventory')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !data) {
+                    throw new Error('Product not found');
+                }
+
+                renderProduct(data);
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showError();
+            }
+        }
+
+        // Render product details
+        function renderProduct(product) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('product-content').classList.remove('hidden');
+
+            // Update page title
+            document.title = `${product.name} - GreenOak Technologies`;
+
+            // Set main image
+            const mainImage = document.getElementById('main-image');
+            const imageUrl = product.image_urls && product.image_urls.length > 0
+                ? `${STORAGE_BASE_URL}${product.image_urls[0]}`
+                : 'https://via.placeholder.com/600x400?text=No+Image';
+            mainImage.src = imageUrl;
+            mainImage.alt = product.name;
+
+            // Set sold overlay if sold
+            if (product.status === 'sold') {
+                mainImage.classList.add('sold-image');
+                document.getElementById('sold-overlay').classList.remove('hidden');
+            }
+
+            // Set verified badge if refurbished
+            if (product.condition === 'Refurbished') {
+                document.getElementById('verified-badge').classList.remove('hidden');
+            }
+
+            // Set thumbnails
+            const thumbnailsContainer = document.getElementById('thumbnails');
+            if (product.image_urls && product.image_urls.length > 1) {
+                thumbnailsContainer.innerHTML = product.image_urls.map((url, index) => `
+                    <img src="${STORAGE_BASE_URL}${url}" 
+                         alt="Thumbnail ${index + 1}" 
+                         class="thumbnail ${index === 0 ? 'active' : ''}"
+                         onclick="changeMainImage('${STORAGE_BASE_URL}${url}', this)">
+                `).join('');
+            }
+
+            // Set condition badge
+            const conditionBadge = document.getElementById('condition-badge');
+            conditionBadge.textContent = product.condition;
+            conditionBadge.className = `condition-badge ${product.condition === 'New' ? 'condition-new' : 'condition-refurbished'}`;
+
+            // Set category
+            document.getElementById('category').textContent = product.category;
+
+            // Set name and description
+            document.getElementById('product-name').textContent = product.name;
+            document.getElementById('product-description').textContent = product.description;
+
+            // Set price
+            document.getElementById('product-price').textContent = `KSh ${product.price.toLocaleString()}`;
+
+            // Set specifications
+            const specsContainer = document.getElementById('specs-container');
+            const specs = product.specs || {};
+            specsContainer.innerHTML = Object.entries(specs).map(([key, value]) => `
+                <div class="spec-item">
+                    <div class="text-white/50 text-sm capitalize mb-1">${key.replace('_', ' ')}</div>
+                    <div class="text-white font-medium">${value}</div>
+                </div>
+            `).join('');
+
+            // Set WhatsApp button
+            const whatsappContainer = document.getElementById('whatsapp-container');
+            const whatsappMessage = encodeURIComponent(
+                `Hello Green Oak, I'm interested in the ${product.name} listed for KSh ${product.price.toLocaleString()}. Can you confirm the warranty and battery health?`
+            );
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+            if (product.status !== 'sold') {
+                whatsappContainer.innerHTML = `
+                    <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-btn">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Inquire via WhatsApp
+                    </a>
+                `;
+            } else {
+                whatsappContainer.innerHTML = `
+                    <button class="whatsapp-btn opacity-50 cursor-not-allowed" disabled>
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Sold Out
+                    </button>
+                `;
+            }
+        }
+
+        // Change main image
+        function changeMainImage(url, thumbnail) {
+            document.getElementById('main-image').src = url;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            thumbnail.classList.add('active');
+        }
+
+        // Show error state
+        function showError(message = 'We could not load this product right now.') {
+            document.getElementById('loading-state').classList.add('hidden');
+            const errorCopy = document.querySelector('#error-state p');
+            if (errorCopy) {
+                errorCopy.textContent = message;
+            }
+            document.getElementById('error-state').classList.remove('hidden');
+        }
+
+        // Load product on page load
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

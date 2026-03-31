@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Admin - GreenOak Technologies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0a0a0a',
+                        secondary: '#141414',
+                        accent: '#2ecc71',
+                        'accent-hover': '#27ae60',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1f0f 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(39, 174, 96, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(46, 204, 113, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .admin-container {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(46, 204, 113, 0.1);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2ecc71;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: #888888;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #cccccc;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .status-sold {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .condition-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .condition-new {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .condition-refurbished {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-zone {
+            border: 2px dashed rgba(46, 204, 113, 0.5);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .upload-zone.dragover {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.2);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(46, 204, 113, 0.3);
+            border-top-color: #2ecc71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary/80 backdrop-blur-lg border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="font-display text-2xl font-bold">
+                    Green<span class="text-accent">Oak</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="../index.html" class="text-white/70 hover:text-white transition">Home</a>
+                    <a href="../laptops.html" class="text-white/70 hover:text-white transition">Laptops</a>
+                    <a href="../services.html" class="text-white/70 hover:text-white transition">Services</a>
+                    <a href="../sales.html" class="text-white/70 hover:text-white transition">Sales</a>
+                    <a href="sales.html" class="text-accent font-semibold">Sales Admin</a>
+                </div>
+                <a href="../login.html" class="bg-accent hover:bg-accent-hover text-white px-6 py-2 rounded-full font-semibold transition">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+                <h1 class="font-display text-3xl md:text-4xl font-bold mb-2">
+                    Sales <span class="text-accent">Dashboard</span>
+                </h1>
+                <p class="text-white/70">Manage your product inventory</p>
+            </div>
+            <button onclick="openAddModal()" class="btn-primary mt-4 md:mt-0">
+                + Add New Product
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="admin-container p-6">
+                <div class="text-white/50 text-sm mb-2">Total Products</div>
+                <div id="stat-total" class="text-3xl font-bold text-accent">0</div>
+            </div>
+            <div class="admin-container p-6">
+                <div class="text-white/50 text-sm mb-2">Available</div>
+                <div id="stat-available" class="text-3xl font-bold text-green-400">0</div>
+            </div>
+            <div class="admin-container p-6">
+                <div class="text-white/50 text-sm mb-2">Sold</div>
+                <div id="stat-sold" class="text-3xl font-bold text-red-400">0</div>
+            </div>
+            <div class="admin-container p-6">
+                <div class="text-white/50 text-sm mb-2">Total Value</div>
+                <div id="stat-value" class="text-3xl font-bold text-accent">KSh 0</div>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="admin-container p-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <h2 class="text-xl font-semibold mb-4 md:mb-0">Product Inventory</h2>
+                <div class="flex gap-4">
+                    <select id="filter-category" class="form-input w-auto" onchange="loadProducts()">
+                        <option value="">All Categories</option>
+                        <option value="Laptops">Laptops</option>
+                        <option value="Desktops">Desktops</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                    <select id="filter-status" class="form-input w-auto" onchange="loadProducts()">
+                        <option value="">All Status</option>
+                        <option value="available">Available</option>
+                        <option value="sold">Sold</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="flex justify-center py-12">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Table -->
+            <div id="table-container" class="hidden overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Condition</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Products will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3 class="text-lg font-semibold text-white/70 mb-2">No products found</h3>
+                <p class="text-white/50">Add your first product to get started.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="modal-title" class="text-2xl font-bold">Add New Product</h2>
+                <button onclick="closeModal()" class="text-white/50 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Product Name *</label>
+                        <input type="text" id="product-name" class="form-input" placeholder="e.g., Dell Latitude 5520" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Description</label>
+                        <textarea id="product-description" class="form-input" rows="3" placeholder="Product description..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Price (KSh) *</label>
+                            <input type="number" id="product-price" class="form-input" placeholder="85000" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Category *</label>
+                            <select id="product-category" class="form-input" required>
+                                <option value="">Select category</option>
+                                <option value="Laptops">Laptops</option>
+                                <option value="Desktops">Desktops</option>
+                                <option value="Accessories">Accessories</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Condition *</label>
+                            <select id="product-condition" class="form-input" required>
+                                <option value="">Select condition</option>
+                                <option value="New">New</option>
+                                <option value="Refurbished">Refurbished</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Status *</label>
+                            <select id="product-status" class="form-input" required>
+                                <option value="available">Available</option>
+                                <option value="sold">Sold</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Specifications (JSON)</label>
+                        <textarea id="product-specs" class="form-input" rows="4" placeholder='{"processor": "Intel Core i7", "ram": "16GB", "storage": "512GB SSD"}'></textarea>
+                        <p class="text-white/50 text-xs mt-1">Enter specifications as JSON object</p>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Product Images</label>
+                        <div id="upload-zone" class="upload-zone" onclick="document.getElementById('file-input').click()">
+                            <svg class="w-12 h-12 mx-auto text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-white/70 mb-2">Click to upload or drag and drop</p>
+                            <p class="text-white/50 text-sm">PNG, JPG up to 5MB each</p>
+                        </div>
+                        <input type="file" id="file-input" class="hidden" multiple accept="image/*" onchange="handleFileSelect(event)">
+                        <div id="image-previews" class="flex flex-wrap gap-4 mt-4"></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="button" onclick="closeModal()" class="btn-secondary flex-1">Cancel</button>
+                    <button type="submit" class="btn-primary flex-1">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary/50 border-t border-white/10 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-white/50 text-sm">
+                © 2024 GreenOak Technologies. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = localStorage.getItem('greenoak_supabase_url') || window.GREENOAK_SUPABASE_URL || 'https://bxjsxhutoevieieofagg.supabase.co';
+        const SUPABASE_ANON_KEY = localStorage.getItem('greenoak_supabase_anon_key') || window.GREENOAK_SUPABASE_ANON_KEY || 'sb_publishable_wKpUQTg1zL18-6XAP50qyw_JKEK1Ywa';
+        const isSupabaseConfigured = () => (
+            SUPABASE_URL &&
+            SUPABASE_ANON_KEY &&
+            !SUPABASE_URL.includes('YOUR_SUPABASE_URL') &&
+            !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')
+        );
+        const supabase = isSupabaseConfigured()
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        // Supabase Storage public URL base
+        const STORAGE_BASE_URL = `${SUPABASE_URL}/storage/v1/object/public/product-images/`;
+
+        // Current product images
+        let currentImages = [];
+        let uploadedFiles = [];
+
+        // Load products from Supabase
+        async function loadProducts() {
+            if (!isSupabaseConfigured()) {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('table-container').classList.remove('hidden');
+                document.getElementById('products-table-body').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-white/70">
+                            Supabase is not configured yet. Add the project URL and anon key before testing inventory management.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            try {
+                const categoryFilter = document.getElementById('filter-category').value;
+                const statusFilter = document.getElementById('filter-status').value;
+
+                let query = supabase
+                    .from('inventory')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (categoryFilter) {
+                    query = query.eq('category', categoryFilter);
+                }
+                if (statusFilter) {
+                    query = query.eq('status', statusFilter);
+                }
+
+                const { data, error } = await query;
+
+                if (error) throw error;
+
+                renderProducts(data);
+                updateStats(data);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products-table-body').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-red-400">
+                            Error loading products. Please try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Render products to table
+        function renderProducts(products) {
+            const tableBody = document.getElementById('products-table-body');
+            const tableContainer = document.getElementById('table-container');
+            const emptyState = document.getElementById('empty-state');
+            const loadingState = document.getElementById('loading-state');
+
+            loadingState.classList.add('hidden');
+
+            if (products.length === 0) {
+                tableContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tableContainer.classList.remove('hidden');
+
+            tableBody.innerHTML = products.map(product => {
+                const imageUrl = product.image_urls && product.image_urls.length > 0
+                    ? `${STORAGE_BASE_URL}${product.image_urls[0]}`
+                    : 'https://via.placeholder.com/100x100?text=No+Image';
+
+                return `
+                    <tr>
+                        <td>
+                            <img src="${imageUrl}" alt="${product.name}" class="image-preview">
+                        </td>
+                        <td>
+                            <div class="font-semibold">${product.name}</div>
+                            <div class="text-white/50 text-sm truncate max-w-xs">${product.description || 'No description'}</div>
+                        </td>
+                        <td>${product.category}</td>
+                        <td class="font-semibold text-accent">KSh ${product.price.toLocaleString()}</td>
+                        <td>
+                            <span class="condition-badge ${product.condition === 'New' ? 'condition-new' : 'condition-refurbished'}">
+                                ${product.condition}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${product.status === 'available' ? 'status-available' : 'status-sold'}">
+                                ${product.status}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button onclick="editProduct('${product.id}')" class="btn-success">Edit</button>
+                                <button onclick="toggleStatus('${product.id}', '${product.status}')" class="btn-primary">
+                                    ${product.status === 'available' ? 'Mark Sold' : 'Mark Available'}
+                                </button>
+                                <button onclick="deleteProduct('${product.id}')" class="btn-danger">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update statistics
+        function updateStats(products) {
+            const total = products.length;
+            const available = products.filter(p => p.status === 'available').length;
+            const sold = products.filter(p => p.status === 'sold').length;
+            const totalValue = products
+                .filter(p => p.status === 'available')
+                .reduce((sum, p) => sum + p.price, 0);
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-available').textContent = available;
+            document.getElementById('stat-sold').textContent = sold;
+            document.getElementById('stat-value').textContent = `KSh ${totalValue.toLocaleString()}`;
+        }
+
+        // Open add modal
+        function openAddModal() {
+            document.getElementById('modal-title').textContent = 'Add New Product';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            currentImages = [];
+            uploadedFiles = [];
+            document.getElementById('image-previews').innerHTML = '';
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('product-modal').classList.remove('active');
+        }
+
+        // Edit product
+        async function editProduct(id) {
+            try {
+                const { data, error } = await supabase
+                    .from('inventory')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('modal-title').textContent = 'Edit Product';
+                document.getElementById('product-id').value = data.id;
+                document.getElementById('product-name').value = data.name;
+                document.getElementById('product-description').value = data.description || '';
+                document.getElementById('product-price').value = data.price;
+                document.getElementById('product-category').value = data.category;
+                document.getElementById('product-condition').value = data.condition;
+                document.getElementById('product-status').value = data.status;
+                document.getElementById('product-specs').value = data.specs ? JSON.stringify(data.specs, null, 2) : '';
+
+                currentImages = data.image_urls || [];
+                uploadedFiles = [];
+                renderImagePreviews();
+
+                document.getElementById('product-modal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading product:', error);
+                alert('Error loading product details');
+            }
+        }
+
+        // Handle file select
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            uploadedFiles = [...uploadedFiles, ...files];
+            renderImagePreviews();
+        }
+
+        // Render image previews
+        function renderImagePreviews() {
+            const container = document.getElementById('image-previews');
+            container.innerHTML = '';
+
+            // Show existing images
+            currentImages.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                div.innerHTML = `
+                    <img src="${STORAGE_BASE_URL}${url}" class="w-24 h-24 object-cover rounded-lg">
+                    <button type="button" onclick="removeExistingImage(${index})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">×</button>
+                `;
+                container.appendChild(div);
+            });
+
+            // Show new uploads
+            uploadedFiles.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-24 h-24 object-cover rounded-lg">
+                        <button type="button" onclick="removeNewImage(${index})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">×</button>
+                    `;
+                };
+                reader.readAsDataURL(file);
+                container.appendChild(div);
+            });
+        }
+
+        // Remove existing image
+        function removeExistingImage(index) {
+            currentImages.splice(index, 1);
+            renderImagePreviews();
+        }
+
+        // Remove new image
+        function removeNewImage(index) {
+            uploadedFiles.splice(index, 1);
+            renderImagePreviews();
+        }
+
+        // Upload images to Supabase Storage
+        async function uploadImages() {
+            const uploadedUrls = [];
+
+            for (const file of uploadedFiles) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `products/${fileName}`;
+
+                const { data, error } = await supabase.storage
+                    .from('product-images')
+                    .upload(filePath, file);
+
+                if (error) {
+                    console.error('Error uploading file:', error);
+                    throw error;
+                }
+
+                uploadedUrls.push(filePath);
+            }
+
+            return uploadedUrls;
+        }
+
+        // Save product
+        async function saveProduct(event) {
+            event.preventDefault();
+
+            const productId = document.getElementById('product-id').value;
+            const name = document.getElementById('product-name').value;
+            const description = document.getElementById('product-description').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const category = document.getElementById('product-category').value;
+            const condition = document.getElementById('product-condition').value;
+            const status = document.getElementById('product-status').value;
+            const specsText = document.getElementById('product-specs').value;
+
+            let specs = {};
+            if (specsText) {
+                try {
+                    specs = JSON.parse(specsText);
+                } catch (e) {
+                    alert('Invalid JSON format for specifications');
+                    return;
+                }
+            }
+
+            try {
+                // Upload new images
+                const newImageUrls = await uploadImages();
+                const allImages = [...currentImages, ...newImageUrls];
+
+                const productData = {
+                    name,
+                    description,
+                    price,
+                    category,
+                    condition,
+                    status,
+                    specs,
+                    image_urls: allImages
+                };
+
+                if (productId) {
+                    // Update existing product
+                    const { error } = await supabase
+                        .from('inventory')
+                        .update(productData)
+                        .eq('id', productId);
+
+                    if (error) throw error;
+                    alert('Product updated successfully!');
+                } else {
+                    // Create new product
+                    const { error } = await supabase
+                        .from('inventory')
+                        .insert([productData]);
+
+                    if (error) throw error;
+                    alert('Product added successfully!');
+                }
+
+                closeModal();
+                loadProducts();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Error saving product: ' + error.message);
+            }
+        }
+
+        // Toggle product status
+        async function toggleStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'available' ? 'sold' : 'available';
+            
+            try {
+                const { error } = await supabase
+                    .from('inventory')
+                    .update({ status: newStatus })
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadProducts();
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Error updating product status');
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('inventory')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Product deleted successfully!');
+                loadProducts();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product');
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadZone = document.getElementById('upload-zone');
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            uploadedFiles = [...uploadedFiles, ...files];
+            renderImagePreviews();
+        });
+
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>
